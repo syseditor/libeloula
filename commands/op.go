@@ -20,7 +20,7 @@ func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 		if utils.IsOp(sender.Name()) {
 			op(t.Player, output)
 			if playerHandle, online := utils.Server.PlayerByName(t.Player); online {
-				utils.SendOperatorAbilityPacket(playerHandle)
+				utils.SendOperatorAbilityPacket(playerHandle, true)
 			} else {
 				output.Printf("%sThe player %s seems to be offline.", text.Grey, t.Player)
 			}
