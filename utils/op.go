@@ -101,17 +101,37 @@ func removeOp(name string) {
 	ops = append(ops[:index], ops[index+1:]...)
 }
 
-func SendOperatorAbilityPacket(handle *world.EntityHandle) {
+func SendOperatorAbilityPacket(handle *world.EntityHandle, isCreative bool) {
+
+	flags := uint32(
+		//basic required abilities
+		protocol.AbilityBuild |
+			protocol.AbilityMine |
+			protocol.AbilityDoorsAndSwitches |
+			protocol.AbilityOpenContainers |
+			protocol.AbilityAttackPlayers |
+			protocol.AbilityAttackMobs |
+			//operator abilities
+			protocol.AbilityOperatorCommands |
+			protocol.AbilityTeleport,
+	)
+
+	if isCreative {
+		flags |= protocol.AbilityInstantBuild
+		flags |= protocol.AbilityMayFly
+		flags |= protocol.AbilityLightning
+	}
+
 	pk := &packet.UpdateAbilities{
 		AbilityData: protocol.AbilityData{
-			EntityUniqueID:     0,
-			PlayerPermissions:  byte(2),
-			CommandPermissions: byte(2),
+			EntityUniqueID:     connection.GetConn(handle.UUID().String()).GameData().EntityUniqueID,
+			PlayerPermissions:  packet.PermissionLevelOperator,
+			CommandPermissions: protocol.CommandPermissionLevelHost,
 			Layers: []protocol.AbilityLayer{
 				{
-					Type:             protocol.AbilityLayerTypeCommands,
-					Abilities:        protocol.AbilityOperatorCommands,
-					Values:           0,
+					Type:             protocol.AbilityLayerTypeBase,
+					Abilities:        flags,
+					Values:           flags,
 					FlySpeed:         protocol.AbilityBaseFlySpeed,
 					VerticalFlySpeed: protocol.AbilityBaseVerticalFlySpeed,
 					WalkSpeed:        protocol.AbilityBaseWalkSpeed,
