@@ -4,13 +4,11 @@ import (
 	"github.com/df-mc/dragonfly/server"
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/syseditor/libeloula/commands"
-	"github.com/syseditor/libeloula/connection"
 	"github.com/syseditor/libeloula/utils"
 )
 
 func Initialize(instance *server.Server) {
 	utils.Server = instance
-	utils.GlobalConnectionManager = connection.NewConnectionManager()
 
 	utils.LoadOps()
 	createCommands()
@@ -29,8 +27,4 @@ func registerAllCommands() {
 
 func GetCommandMap() *map[string]cmd.Command {
 	return &utils.CommandMap
-}
-
-func GetConnectionManager() *connection.ConnectionManager {
-	return utils.GlobalConnectionManager
 }

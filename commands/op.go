@@ -19,8 +19,8 @@ func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 	} else if sender, ok := src.(*player.Player); ok {
 		if utils.IsOp(sender.Name()) {
 			op(t.Player, output)
-			if player, online := utils.Server.PlayerByName(t.Player); online {
-				utils.SendOperatorAbilityPacket(player, tx)
+			if playerHandle, online := utils.Server.PlayerByName(t.Player); online {
+				utils.SendOperatorAbilityPacket(playerHandle)
 			} else {
 				output.Printf("%sThe player %s seems to be offline.", text.Grey, t.Player)
 			}
@@ -39,7 +39,7 @@ func op(player string, output *cmd.Output) {
 }
 
 type Deop struct {
-	Player string `cmd:"plauer,player"`
+	Player string `cmd:"player,player"`
 }
 
 func (t Deop) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {

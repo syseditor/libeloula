@@ -8,7 +8,6 @@ import (
 
 type ConnectionListener struct {
 	server.Listener
-	connectionManager *ConnectionManager
 }
 
 func (l ConnectionListener) Accept() (session.Conn, error) {
@@ -19,7 +18,7 @@ func (l ConnectionListener) Accept() (session.Conn, error) {
 
 	if mcConn, ok := conn.(*minecraft.Conn); ok {
 		id := mcConn.IdentityData().Identity
-		l.connectionManager.addConn(id, mcConn)
+		addConn(id, mcConn)
 	}
 
 	return conn, err
@@ -28,7 +27,7 @@ func (l ConnectionListener) Accept() (session.Conn, error) {
 func (l ConnectionListener) Disconnect(conn session.Conn, reason string) error {
 	if mcConn, ok := conn.(*minecraft.Conn); ok {
 		id := mcConn.IdentityData().Identity
-		l.connectionManager.removeConn(id)
+		removeConn(id)
 	}
 
 	return l.Listener.Disconnect(conn.(*minecraft.Conn), reason)

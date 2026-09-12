@@ -7,29 +7,22 @@ import (
 )
 
 var mutex sync.RWMutex
+var connectionManager map[string]*minecraft.Conn
 
-type ConnectionManager struct {
-	connections map[string]*minecraft.Conn
-}
-
-func NewConnectionManager() *ConnectionManager {
-	return &ConnectionManager{}
-}
-
-func (cm ConnectionManager) GetConn(id string) *minecraft.Conn {
+func GetConn(id string) *minecraft.Conn {
 	mutex.Lock()
 	defer mutex.Unlock()
-	return cm.connections[id]
+	return connectionManager[id]
 }
 
-func (cm ConnectionManager) addConn(id string, conn *minecraft.Conn) {
+func addConn(id string, conn *minecraft.Conn) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	cm.connections[id] = conn
+	connectionManager[id] = conn
 }
 
-func (cm ConnectionManager) removeConn(id string) {
+func removeConn(id string) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	delete(cm.connections, id)
+	delete(connectionManager, id)
 }

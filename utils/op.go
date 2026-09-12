@@ -11,6 +11,7 @@ import (
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
+	"github.com/syseditor/libeloula/connection"
 )
 
 const opFile = "ops.txt" //can be changed or derived from a settings file
@@ -100,7 +101,7 @@ func removeOp(name string) {
 	ops = append(ops[:index], ops[index+1:]...)
 }
 
-func SendOperatorAbilityPacket(handle *world.EntityHandle, tx *world.Tx) {
+func SendOperatorAbilityPacket(handle *world.EntityHandle) {
 	pk := &packet.UpdateAbilities{
 			AbilityData: protocol.AbilityData{
 				EntityUniqueID: 0,
@@ -109,11 +110,16 @@ func SendOperatorAbilityPacket(handle *world.EntityHandle, tx *world.Tx) {
 				Layers: []protocol.AbilityLayer{
 					{
 						Type: protocol.AbilityLayerTypeBase,
+						Abilities: protocol.AbilityAttackMobs | protocol.AbilityAttackPlayers | protocol.AbilityWorldBuilder | protocol.AbilityOperatorCommands | protocol.AbilityMine | protocol.AbilityDoorsAndSwitches,
+						Values: protocol.AbilityAttackMobs | protocol.AbilityMine | protocol.AbilityWorldBuilder | protocol.AbilityDoorsAndSwitches,
+						FlySpeed: protocol.AbilityBaseFlySpeed,
+						VerticalFlySpeed: protocol.AbilityBaseVerticalFlySpeed,
+						WalkSpeed: protocol.AbilityBaseWalkSpeed,
 					},
 				},
 			},
 		}
 
-	err := GlobalConnectionManager.GetConn(handle.UUID().String()).WritePacket(pk)
+	err := connection.GetConn(handle.UUID().String()).WritePacket(pk)
 	Check(err)
 }
