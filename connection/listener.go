@@ -6,12 +6,12 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft"
 )
 
-type connectionListener struct {
+type ConnectionListener struct {
 	server.Listener
 	connectionManager *ConnectionManager
 }
 
-func (l connectionListener) Accept() (session.Conn, error) {
+func (l ConnectionListener) Accept() (session.Conn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func (l connectionListener) Accept() (session.Conn, error) {
 	return conn, err
 }
 
-func (l connectionListener) Disconnect(conn session.Conn, reason string) error {
+func (l ConnectionListener) Disconnect(conn session.Conn, reason string) error {
 	if mcConn, ok := conn.(*minecraft.Conn); ok {
 		id := mcConn.IdentityData().Identity
 		l.connectionManager.removeConn(id)
