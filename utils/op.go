@@ -105,13 +105,13 @@ func SendOperatorAbilityPacket(handle *world.EntityHandle) {
 	pk := &packet.UpdateAbilities{
 		AbilityData: protocol.AbilityData{
 			EntityUniqueID:     0,
-			PlayerPermissions:  2,
-			CommandPermissions: 2,
+			PlayerPermissions:  byte(2),
+			CommandPermissions: byte(2),
 			Layers: []protocol.AbilityLayer{
 				{
-					Type:             protocol.AbilityLayerTypeBase,
-					Abilities:        protocol.AbilityAttackMobs | protocol.AbilityAttackPlayers | protocol.AbilityWorldBuilder | protocol.AbilityOperatorCommands | protocol.AbilityMine | protocol.AbilityDoorsAndSwitches,
-					Values:           protocol.AbilityAttackMobs | protocol.AbilityMine | protocol.AbilityWorldBuilder | protocol.AbilityDoorsAndSwitches,
+					Type:             protocol.AbilityLayerTypeCommands,
+					Abilities:        protocol.AbilityOperatorCommands,
+					Values:           0,
 					FlySpeed:         protocol.AbilityBaseFlySpeed,
 					VerticalFlySpeed: protocol.AbilityBaseVerticalFlySpeed,
 					WalkSpeed:        protocol.AbilityBaseWalkSpeed,
