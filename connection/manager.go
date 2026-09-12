@@ -7,7 +7,7 @@ import (
 )
 
 var mutex sync.RWMutex
-var connectionManager map[string]*minecraft.Conn
+var connectionManager = make(map[string]*minecraft.Conn, 0)
 
 func GetConn(id string) *minecraft.Conn {
 	mutex.Lock()
