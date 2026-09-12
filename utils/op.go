@@ -13,6 +13,11 @@ const opFile = "ops.txt" //can be changed or derived from a settings file
 var ops []string
 
 func LoadOps() {
+	if _, err := os.Stat(opFile); err != nil {
+		_, err = os.Create(opFile)
+		Check(err)
+	}
+
 	f, err := os.OpenFile(opFile, os.O_CREATE|os.O_RDWR, 0665)
 	if err != nil {
 		Check(err)
