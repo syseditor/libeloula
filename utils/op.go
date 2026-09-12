@@ -13,7 +13,7 @@ const opFile = "ops.txt" //can be changed or derived from a settings file
 var ops []string
 
 func LoadOps() {
-	f, err := os.Open(opFile)
+	f, err := os.OpenFile(opFile, os.O_CREATE|os.O_RDWR, 0665)
 	if err != nil {
 		Check(err)
 	}
@@ -26,7 +26,9 @@ func LoadOps() {
 		line, err := reader.ReadString('\n')
 		if err == io.EOF {
 			break
-		} else { Check(err) }
+		} else {
+			Check(err)
+		}
 
 		ops = append(ops, line)
 	}
@@ -37,7 +39,9 @@ func IsOp(name string) bool {
 }
 
 func AddOp(name string) bool {
-	if IsOp(name) { return false }
+	if IsOp(name) {
+		return false
+	}
 
 	f, err := os.OpenFile(opFile, os.O_APPEND|os.O_RDWR, 0660)
 	if err != nil {
@@ -53,7 +57,9 @@ func AddOp(name string) bool {
 }
 
 func RemoveOp(name string) bool {
-	if !IsOp(name) { return false }
+	if !IsOp(name) {
+		return false
+	}
 
 	f, err := os.OpenFile(opFile, os.O_RDWR, 0660)
 	if err != nil {
@@ -66,14 +72,17 @@ func RemoveOp(name string) bool {
 	for _, op := range ops {
 		fmt.Fprintf(f, "%s\n", op)
 	}
-	
+
 	return true
 }
 
 func removeOp(name string) {
 	var index int
 	for i, op := range ops {
-		if op == name { index = i; break }
+		if op == name {
+			index = i
+			break
+		}
 	}
 
 	ops = append(ops[:index], ops[index+1:]...)
