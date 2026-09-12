@@ -103,23 +103,35 @@ func removeOp(name string) {
 
 func SendOperatorAbilityPacket(handle *world.EntityHandle) {
 	pk := &packet.UpdateAbilities{
-			AbilityData: protocol.AbilityData{
-				EntityUniqueID: 0,
-				PlayerPermissions: 2,
-				CommandPermissions: 2,
-				Layers: []protocol.AbilityLayer{
-					{
-						Type: protocol.AbilityLayerTypeBase,
-						Abilities: protocol.AbilityAttackMobs | protocol.AbilityAttackPlayers | protocol.AbilityWorldBuilder | protocol.AbilityOperatorCommands | protocol.AbilityMine | protocol.AbilityDoorsAndSwitches,
-						Values: protocol.AbilityAttackMobs | protocol.AbilityMine | protocol.AbilityWorldBuilder | protocol.AbilityDoorsAndSwitches,
-						FlySpeed: protocol.AbilityBaseFlySpeed,
-						VerticalFlySpeed: protocol.AbilityBaseVerticalFlySpeed,
-						WalkSpeed: protocol.AbilityBaseWalkSpeed,
-					},
+		AbilityData: protocol.AbilityData{
+			EntityUniqueID:     0,
+			PlayerPermissions:  2,
+			CommandPermissions: 2,
+			Layers: []protocol.AbilityLayer{
+				{
+					Type:             protocol.AbilityLayerTypeBase,
+					Abilities:        protocol.AbilityAttackMobs | protocol.AbilityAttackPlayers | protocol.AbilityWorldBuilder | protocol.AbilityOperatorCommands | protocol.AbilityMine | protocol.AbilityDoorsAndSwitches,
+					Values:           protocol.AbilityAttackMobs | protocol.AbilityMine | protocol.AbilityWorldBuilder | protocol.AbilityDoorsAndSwitches,
+					FlySpeed:         protocol.AbilityBaseFlySpeed,
+					VerticalFlySpeed: protocol.AbilityBaseVerticalFlySpeed,
+					WalkSpeed:        protocol.AbilityBaseWalkSpeed,
 				},
 			},
-		}
+		},
+	}
 
 	err := connection.GetConn(handle.UUID().String()).WritePacket(pk)
+	Check(err)
+
+	msg := &packet.Text{
+		TextType:         1, //chat type
+		NeedsTranslation: false,
+		SourceName:       "Server",
+		Message:          "Welcome to the server fellow player!",
+		Parameters:       []string{},
+		PlatformChatID:   "",
+	}
+
+	err = connection.GetConn(handle.UUID().String()).WritePacket(msg)
 	Check(err)
 }
