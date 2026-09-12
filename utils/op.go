@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"slices"
+	"strings"
 )
 
 const opFile = "ops.txt" //can be changed or derived from a settings file
@@ -35,7 +36,7 @@ func LoadOps() {
 			Check(err)
 		}
 
-		ops = append(ops, line)
+		ops = append(ops, strings.ReplaceAll(line, "\n", ""))
 	}
 
 	fmt.Println("Loaded ops:", ops)
