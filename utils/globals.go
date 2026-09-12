@@ -6,4 +6,4 @@ import (
 )
 
 var Server *server.Server
-var CommandMap map[string]cmd.Command
+var CommandMap = make(map[string]cmd.Command, 0)
