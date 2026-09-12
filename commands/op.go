@@ -10,7 +10,7 @@ import (
 )
 
 type Op struct {
-	Player string `cmd:"player,player"`
+	Player string `cmd:"player"`
 }
 
 func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
@@ -39,7 +39,7 @@ func op(player string, output *cmd.Output) {
 }
 
 type Deop struct {
-	Player string `cmd:"player,player"`
+	Player string `cmd:"player"`
 }
 
 func (t Deop) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
