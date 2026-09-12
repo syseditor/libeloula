@@ -126,7 +126,7 @@ func SendOperatorAbilityPacket(handle *world.EntityHandle, isCreative bool) {
 		AbilityData: protocol.AbilityData{
 			EntityUniqueID:     connection.GetConn(handle.UUID().String()).GameData().EntityUniqueID,
 			PlayerPermissions:  packet.PermissionLevelOperator,
-			CommandPermissions: protocol.CommandPermissionLevelOwner,
+			CommandPermissions: protocol.CommandPermissionLevelAdmin,
 			Layers: []protocol.AbilityLayer{
 				{
 					Type:             protocol.AbilityLayerTypeBase,
