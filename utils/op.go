@@ -7,6 +7,10 @@ import (
 	"os"
 	"slices"
 	"strings"
+
+	"github.com/df-mc/dragonfly/server/world"
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
+	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
 const opFile = "ops.txt" //can be changed or derived from a settings file
@@ -94,4 +98,22 @@ func removeOp(name string) {
 	}
 
 	ops = append(ops[:index], ops[index+1:]...)
+}
+
+func SendOperatorAbilityPacket(handle *world.EntityHandle, tx *world.Tx) {
+	pk := &packet.UpdateAbilities{
+			AbilityData: protocol.AbilityData{
+				EntityUniqueID: 0,
+				PlayerPermissions: 2,
+				CommandPermissions: 2,
+				Layers: []protocol.AbilityLayer{
+					{
+						Type: protocol.AbilityLayerTypeBase,
+					},
+				},
+			},
+		}
+
+	err := GlobalConnectionManager.GetConn(handle.UUID().String()).WritePacket(pk)
+	Check(err)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type Op struct {
-	Player string `cmd:"op"`
+	Player string `cmd:"player,player"`
 }
 
 func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
@@ -19,6 +19,11 @@ func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 	} else if sender, ok := src.(*player.Player); ok {
 		if utils.IsOp(sender.Name()) {
 			op(t.Player, output)
+			if player, online := utils.Server.PlayerByName(t.Player); online {
+				utils.SendOperatorAbilityPacket(player, tx)
+			} else {
+				output.Printf("%sThe player %s seems to be offline.", text.Grey, t.Player)
+			}
 		} else {
 			output.Error(text.DarkRed, "You do not have permission to execute this command.")
 		}
@@ -29,19 +34,19 @@ func op(player string, output *cmd.Output) {
 	if utils.AddOp(player) {
 		output.Printf("Successfully opped player %s.\n", player)
 	} else {
-		output.Error("Player", player, "is already opped.")
+		output.Errorf("Player %s is already opped.", player)
 	}
 }
 
 type Deop struct {
-	Player string `cmd:"deop"`
+	Player string `cmd:"plauer,player"`
 }
 
 func (t Deop) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 
 }
 
-type OpList struct {}
+type OpList struct{}
 
 func (t OpList) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 
