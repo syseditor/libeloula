@@ -37,6 +37,8 @@ func LoadOps() {
 
 		ops = append(ops, line)
 	}
+
+	fmt.Println("Loaded ops:", ops)
 }
 
 func IsOp(name string) bool {
