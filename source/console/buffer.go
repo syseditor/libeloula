@@ -49,6 +49,7 @@ loop:
 		case str := <-input:
 			bufferContinue <- 0
 			if len(str) == 0 {
+				bufferContinue <- 1
 				continue
 			}
 
