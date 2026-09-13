@@ -23,12 +23,19 @@ func InitBuffer() {
 	signal.Notify(terminationSignal, syscall.SIGTERM, syscall.SIGINT)
 
 	input := make(chan string, 1)
+	bufferContinue := make(chan bool, 1)
 
 	go func() {
 		for {
-			fmt.Printf("%s>> ", text.ANSI(text.Green))
-			str, _ := reader.ReadString('\n')
-			input <- str
+			select {
+			case <-bufferContinue:
+				fmt.Printf("%s>> ", text.ANSI(text.Green))
+				str, _ := reader.ReadString('\n')
+				input <- str
+			default:
+				continue
+			}
+
 		}
 	}()
 
@@ -39,9 +46,11 @@ loop:
 			fmt.Printf("%s\nTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
 			break loop
 		case str := <-input:
+			bufferContinue <- false
 			str = strings.ReplaceAll(str, "\n", "")
 
 			if len(str) == 0 {
+				bufferContinue <- true
 				continue
 			}
 
@@ -51,11 +60,13 @@ loop:
 
 			if !found {
 				fmt.Printf("%sCommand %s not found.", text.ANSI(text.Redstone), cmdWithArgs[0])
+				bufferContinue <- true
 				continue
 				// testing this, might not be needed if SendCommandOutput works properly
 			}
 
 			command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
+			bufferContinue <- true
 		}
 
 	}
