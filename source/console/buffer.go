@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -57,6 +58,16 @@ loop:
 				continue
 			}
 
+			if strings.EqualFold(str, "clear") {
+				c := exec.Command("clear")
+				c.Stdout = os.Stdout
+				c.Run()
+				bufferContinue <- true
+			} else if strings.EqualFold(str, "stop") {
+				terminationSignal <- os.Interrupt
+				continue
+			}
+
 			cmdWithArgs := strings.Split(str, " ")
 
 			command, found := cmd.ByAlias(cmdWithArgs[0])
@@ -65,7 +76,6 @@ loop:
 				fmt.Printf("%sCommand %s not found.\n", text.ANSI(text.Redstone), cmdWithArgs[0])
 				bufferContinue <- true
 				continue
-				// testing this, might not be needed if SendCommandOutput works properly
 			}
 
 			command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
