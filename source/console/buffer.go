@@ -63,6 +63,7 @@ loop:
 				continue
 			} else if strings.EqualFold(str, "stop") {
 				terminationSignal <- syscall.SIGTERM
+				utils.Server.Close()
 				continue
 			}
 
