@@ -23,12 +23,20 @@ func InitBuffer() {
 	signal.Notify(terminationSignal, syscall.SIGTERM, syscall.SIGINT)
 
 	input := make(chan string, 1)
+	bufferContinue := make(chan int, 1)
 
 	go func() {
 		for {
 			fmt.Printf("%s>> ", text.ANSI(text.Green))
 			str, _ := reader.ReadString('\n')
 			input <- str
+		bufferWait:
+			select {
+			case <-bufferContinue:
+				break bufferWait
+			default:
+				continue
+			}
 		}
 	}()
 
@@ -36,7 +44,7 @@ loop:
 	for {
 		select {
 		case <-terminationSignal:
-			fmt.Printf("%sTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
+			fmt.Printf("%s\nTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
 			break loop
 		case str := <-input:
 			if len(str) == 0 {
@@ -54,6 +62,7 @@ loop:
 			}
 
 			command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
+			bufferContinue <- 1
 		}
 
 	}
