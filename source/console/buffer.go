@@ -62,7 +62,7 @@ loop:
 			command, found := cmd.ByAlias(cmdWithArgs[0])
 
 			if !found {
-				fmt.Printf("%sCommand %s not found.", text.ANSI(text.Redstone), cmdWithArgs[0])
+				fmt.Printf("%sCommand %s not found.\n", text.ANSI(text.Redstone), cmdWithArgs[0])
 				bufferContinue <- true
 				continue
 				// testing this, might not be needed if SendCommandOutput works properly

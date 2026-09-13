@@ -14,7 +14,7 @@ type Op struct {
 }
 
 func (t Op) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
-	if _, ok := src.(*console.ConsoleCommandSource); ok {
+	if _, ok := src.(console.ConsoleCommandSource); ok {
 		op(t.Player, output)
 	} else if sender, ok := src.(*player.Player); ok {
 		if utils.IsOp(sender.Name()) {
