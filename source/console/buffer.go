@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -59,9 +58,7 @@ loop:
 			}
 
 			if strings.EqualFold(str, "clear") {
-				c := exec.Command("clear")
-				c.Stdout = os.Stdout
-				c.Run()
+				fmt.Print("\033[H\033[2J")
 				bufferContinue <- true
 			} else if strings.EqualFold(str, "stop") {
 				terminationSignal <- os.Interrupt
