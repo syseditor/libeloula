@@ -29,11 +29,13 @@ func InitBuffer() {
 	go func() {
 		for {
 			select {
-			case <-bufferContinue:
-				fmt.Printf("%s>> ", text.ANSI(text.Green))
-				str, _ := reader.ReadString('\n')
-				input <- str
-				bufferContinue <- false
+			case check := <-bufferContinue:
+				if check {
+					fmt.Printf("%s>> ", text.ANSI(text.Green))
+					str, _ := reader.ReadString('\n')
+					bufferContinue <- false
+					input <- str
+				}
 			default:
 				continue
 			}
@@ -69,7 +71,6 @@ loop:
 			command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
 			bufferContinue <- true
 		}
-
 	}
 
 	utils.Server.CloseOnProgramEnd()
