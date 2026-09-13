@@ -26,6 +26,7 @@ func registerAllCommands() {
 	}
 }
 
+// Might remove
 func GetCommandMap() *map[string]cmd.Command {
 	return &utils.CommandMap
 }

@@ -81,5 +81,5 @@ loop:
 		}
 	}
 
-	utils.Server.Close()
+	utils.TerminateServer()
 }
