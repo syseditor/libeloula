@@ -24,6 +24,7 @@ func InitBuffer() {
 
 	input := make(chan string, 1)
 	bufferContinue := make(chan bool, 1)
+	bufferContinue <- true
 
 	go func() {
 		for {
@@ -32,6 +33,7 @@ func InitBuffer() {
 				fmt.Printf("%s>> ", text.ANSI(text.Green))
 				str, _ := reader.ReadString('\n')
 				input <- str
+				bufferContinue <- false
 			default:
 				continue
 			}
@@ -46,7 +48,6 @@ loop:
 			fmt.Printf("%s\nTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
 			break loop
 		case str := <-input:
-			bufferContinue <- false
 			str = strings.ReplaceAll(str, "\n", "")
 
 			if len(str) == 0 {
