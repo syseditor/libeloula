@@ -47,6 +47,7 @@ loop:
 			fmt.Printf("%s\nTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
 			break loop
 		case str := <-input:
+			bufferContinue <- 0
 			if len(str) == 0 {
 				continue
 			}
