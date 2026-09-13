@@ -62,7 +62,7 @@ loop:
 				bufferContinue <- true
 				continue
 			} else if strings.EqualFold(str, "stop") {
-				terminationSignal <- os.Kill
+				terminationSignal <- syscall.SIGTERM
 				continue
 			}
 
