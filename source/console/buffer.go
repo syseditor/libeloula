@@ -4,10 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/df-mc/dragonfly/server/cmd"
 	"github.com/sandertv/gophertunnel/minecraft/text"
+	"github.com/syseditor/libeloula/utils"
 )
 
 func InitBuffer() {
@@ -16,24 +19,44 @@ func InitBuffer() {
 	reader := bufio.NewReader(os.Stdin)
 	console := &ConsoleCommandSource{}
 
+	terminationSignal := make(chan os.Signal, 1)
+	signal.Notify(terminationSignal, syscall.SIGTERM, syscall.SIGINT)
+
+	input := make(chan string, 1)
+
+	go func() {
+		for {
+			fmt.Printf("%s>> ", text.ANSI(text.Green))
+			str, _ := reader.ReadString('\n')
+			input <- str
+		}
+	}()
+
+loop:
 	for {
-		fmt.Print(">> ")
-		str, _ := reader.ReadString('\n')
+		select {
+		case <-terminationSignal:
+			fmt.Printf("%sTerminating session and server...\n%s", text.ANSI(text.DarkRed), text.ANSI(text.Reset))
+			break loop
+		case str := <-input:
+			if len(str) == 0 {
+				continue
+			}
 
-		if len(str) == 0 {
-			continue
+			str = strings.ReplaceAll(str, "\n", "")
+			cmdWithArgs := strings.Split(str, " ")
+
+			command, found := cmd.ByAlias(cmdWithArgs[0])
+
+			if !found {
+				fmt.Printf("%sCommand %s not found.", text.ANSI(text.Redstone), cmdWithArgs[0])
+				// testing this, might not be needed if SendCommandOutput works properly
+			}
+
+			command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
 		}
 
-		str = strings.ReplaceAll(str, "\n", "")
-		cmdWithArgs := strings.Split(str, " ")
-
-		command, found := cmd.ByAlias(cmdWithArgs[0])
-
-		if !found {
-			fmt.Printf("%sCommand not found.", text.ANSI(text.Redstone))
-			// testing this, might not be needed if SendCommandOutput works properly
-		}
-
-		command.Execute(strings.Join(cmdWithArgs[1:], " "), *console, nil)
 	}
+
+	utils.Server.CloseOnProgramEnd()
 }
