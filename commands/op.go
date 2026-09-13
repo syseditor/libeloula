@@ -34,7 +34,7 @@ func op(player string, output *cmd.Output) {
 	if utils.AddOp(player) {
 		output.Printf("Successfully opped player %s.", player)
 	} else {
-		output.Errorf("Player %s is already opped.", player)
+		output.Errorf("%sPlayer %s is already opped.", text.Red, player)
 	}
 }
 
