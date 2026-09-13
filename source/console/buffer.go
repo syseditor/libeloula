@@ -59,6 +59,8 @@ loop:
 
 			if !found {
 				fmt.Printf("%sCommand %s not found.", text.ANSI(text.Redstone), cmdWithArgs[0])
+				bufferContinue <- 1
+				continue
 				// testing this, might not be needed if SendCommandOutput works properly
 			}
 
