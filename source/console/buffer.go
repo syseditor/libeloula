@@ -60,6 +60,7 @@ loop:
 			if strings.EqualFold(str, "clear") {
 				fmt.Print("\033[H\033[2J")
 				bufferContinue <- true
+				continue
 			} else if strings.EqualFold(str, "stop") {
 				terminationSignal <- os.Interrupt
 				continue
