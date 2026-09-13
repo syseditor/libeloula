@@ -48,12 +48,13 @@ loop:
 			break loop
 		case str := <-input:
 			bufferContinue <- 0
+			str = strings.ReplaceAll(str, "\n", "")
+
 			if len(str) == 0 {
 				bufferContinue <- 1
 				continue
 			}
 
-			str = strings.ReplaceAll(str, "\n", "")
 			cmdWithArgs := strings.Split(str, " ")
 
 			command, found := cmd.ByAlias(cmdWithArgs[0])
