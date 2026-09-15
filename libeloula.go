@@ -9,14 +9,14 @@ import (
 	"github.com/syseditor/libeloula/utils"
 )
 
-func Initialize(instance *server.Server) {
+func Initialize(instance *server.Server, addr []string) {
 	utils.Server = instance
 
 	utils.LoadOps()
 	createCommands()
 	registerAllCommands()
 
-	memcached.CacheManager = memcached.NewSessionManager()
+	memcached.CacheManager = memcached.NewSessionManager(addr...)
 }
 
 func createCommands() {
