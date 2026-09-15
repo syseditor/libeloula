@@ -3,11 +3,15 @@ package memcached
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
+	"github.com/syseditor/libeloula/utils"
 )
+
+var CacheManager *SessionManager
 
 var cachePrefix = "player_session:" //can be anything
 
@@ -61,6 +65,19 @@ func (s *SessionManager) LoadOrCreate(uuid uuid.UUID, username string) (*PlayerS
 	return nil, err //in case something else is wrong
 }
 
+func (s *SessionManager) Load(uuid uuid.UUID) (*PlayerSession, error) { //only if we're sure the session has been created in cache before
+	var session PlayerSession
+	key := cachePrefix + uuid.String()
+	data, _ := s.cache.Get(key)
+	buffer := bytes.NewBuffer(data.Value)
+
+	if err := gob.NewDecoder(buffer).Decode(&session); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}
+
 func (s *SessionManager) Save(uuid uuid.UUID, ps *PlayerSession) error {
 	key := cachePrefix + uuid.String()
 
@@ -79,4 +96,16 @@ func (s *SessionManager) Save(uuid uuid.UUID, ps *PlayerSession) error {
 
 func (s *SessionManager) Delete(uuid uuid.UUID) error {
 	return s.cache.Delete(cachePrefix + uuid.String())
+}
+
+func (s *SessionManager) AddBlocksBroken(uuid uuid.UUID) error {
+	session, err := s.Load(uuid)
+	utils.Check(err)
+
+	if session != nil {
+		session.BlocksBroken++
+		return s.Save(uuid, session)
+	} else {
+		return errors.New("Call AddBlocksBroken() for non-existant session while loaded correctly")
+	}
 }

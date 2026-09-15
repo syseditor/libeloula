@@ -16,7 +16,7 @@ func Initialize(instance *server.Server) {
 	createCommands()
 	registerAllCommands()
 
-	utils.SessionManager = memcached.NewSessionManager()
+	memcached.CacheManager = memcached.NewSessionManager()
 }
 
 func createCommands() {
