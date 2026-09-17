@@ -20,26 +20,38 @@ type Profile struct {
 
 func (c Profile) Run(src cmd.Source, output *cmd.Output, tx *world.Tx) {
 	profilePlayer, _ := c.Player.Load()
-	session, err := memcached.CacheManager.Load(profilePlayer)
+	if pl, ok := src.(*player.Player); ok {
+		if profilePlayer == "" {
+			profilePlayer = pl.Name()
+		}
 
-	if err != nil {
-		if pl, ok := src.(*player.Player); ok {
+		session, err := memcached.CacheManager.Load(profilePlayer)
+		if err == nil {
 			pl.SendForm(form.NewProfileForm(*session))
 		} else {
-			timestampInt, err := strconv.ParseInt(fmt.Sprintf("%d", session.JoinedAt), 10, 64)
-			utils.Check(err)
-
-			timestamp := time.Unix(timestampInt, 0)
-
-			output.Printf(
-				"Profile\n\nUUID: %s\nUsername: %s\nFirst joined at: %s\nTotal blocks broken: %d\n",
-				session.UUID,
-				session.Username,
-				timestamp.String(),
-				session.BlocksBroken,
-			)
+			output.Errorf("%sPlayer %s not found in cache.", text.Red, profilePlayer)
 		}
 	} else {
-		output.Errorf("%sPlayer %s not found in cache.", text.Red, profilePlayer)
+		if profilePlayer == "" {
+			output.Errorf("%sYou need to specify a player.", text.Red)
+		} else {
+			session, err := memcached.CacheManager.Load(profilePlayer)
+			if err == nil {
+				timestampInt, err := strconv.ParseInt(fmt.Sprintf("%d", session.JoinedAt), 10, 64)
+				utils.Check(err)
+
+				timestamp := time.Unix(timestampInt, 0)
+
+				output.Printf(
+					"Profile\n\nUUID: %s\nUsername: %s\nFirst joined at: %s\nTotal blocks broken: %d\n",
+					session.UUID,
+					session.Username,
+					timestamp.String(),
+					session.BlocksBroken,
+				)
+			} else {
+				output.Errorf("%sPlayer %s not found in cache.", text.Red, profilePlayer)
+			}
+		}
 	}
 }
