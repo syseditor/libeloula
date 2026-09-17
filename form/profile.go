@@ -21,7 +21,7 @@ func NewProfileForm(session memcached.PlayerSession) form.Menu {
 	timestamp := time.Unix(timestampInt, 0)
 	return form.NewMenu(
 		ProfileForm{}, "Profile",
-	).WithBody(
+	).WithElements(
 		form.NewLabel("UUID:"+session.UUID),
 		form.NewLabel("Username: "+session.Username),
 		form.NewLabel("First joined at: "+timestamp.String()),
