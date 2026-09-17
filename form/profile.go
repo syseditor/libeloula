@@ -12,26 +12,23 @@ import (
 	"github.com/syseditor/libeloula/utils"
 )
 
-type ProfileForm struct {
-	uuid         form.Label
-	username     form.Label
-	joinedat     form.Label
-	blocksbroken form.Label
-	btn          form.Button
-}
+type ProfileForm struct{}
 
 func NewProfileForm(session memcached.PlayerSession) form.Menu {
 	timestampInt, err := strconv.ParseInt(fmt.Sprintf("%d", session.JoinedAt), 10, 64)
 	utils.Check(err)
 
 	timestamp := time.Unix(timestampInt, 0)
-	return form.NewMenu(ProfileForm{
-		uuid:         form.NewLabel("UUID:" + session.UUID),
-		username:     form.NewLabel("Username: " + session.Username),
-		joinedat:     form.NewLabel("First joined at: " + timestamp.String()),
-		blocksbroken: form.NewLabel(fmt.Sprintf("Total blocks broken: %d", session.BlocksBroken)),
-		btn:          form.NewButton("Great!", ""),
-	}, "Profile")
+	return form.NewMenu(
+		ProfileForm{}, "Profile",
+	).WithBody(
+		form.NewLabel("UUID:"+session.UUID),
+		form.NewLabel("Username: "+session.Username),
+		form.NewLabel("First joined at: "+timestamp.String()),
+		form.NewLabel(fmt.Sprintf("Total blocks broken: %d", session.BlocksBroken)),
+	).WithButtons(
+		form.NewButton("Great!", ""),
+	)
 }
 
 func (f ProfileForm) Submit(submitter form.Submitter, pressed form.Button, world *world.Tx) {
