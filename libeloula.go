@@ -21,6 +21,7 @@ func Initialize(instance *server.Server, addr []string) {
 
 func createCommands() {
 	utils.CommandMap["op"] = cmd.New("op", "Gives OP permissions to a specific player", []string{"op"}, commands.Op{})
+	utils.CommandMap["profile"] = cmd.New("profile", "Displays the profile of a player!", []string{"profile"}, commands.Profile{})
 }
 
 func registerAllCommands() {

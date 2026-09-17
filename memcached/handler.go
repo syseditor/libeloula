@@ -27,10 +27,10 @@ func (PlayerHandler) HandleQuit(player *player.Player) {
 		For testing purposes, we'll be deleting all sessions without saving them.
 	*/
 
-	err := CacheManager.Delete(player.UUID())
+	err := CacheManager.Delete(player.Name())
 	utils.Check(err)
 }
 
 func (PlayerHandler) HandleBlockBreak(ctx *player.Context, _ cube.Pos, _ *[]item.Stack, _ *int) {
-	CacheManager.AddBlocksBroken(ctx.Player().UUID())
+	CacheManager.AddBlocksBroken(ctx.Player().Name())
 }

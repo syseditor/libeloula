@@ -35,7 +35,7 @@ func NewSessionManager(addr ...string) *SessionManager {
 }
 
 func (s *SessionManager) LoadOrCreate(uuid uuid.UUID, username string) (*PlayerSession, error) {
-	key := cachePrefix + uuid.String()
+	key := cachePrefix + username
 	data, err := s.cache.Get(key)
 
 	switch err {
@@ -55,7 +55,7 @@ func (s *SessionManager) LoadOrCreate(uuid uuid.UUID, username string) (*PlayerS
 			BlocksBroken: 0,
 		}
 
-		if err := s.Save(uuid, newSession); err != nil {
+		if err := s.Save(username, newSession); err != nil {
 			return nil, err
 		}
 
@@ -65,9 +65,9 @@ func (s *SessionManager) LoadOrCreate(uuid uuid.UUID, username string) (*PlayerS
 	return nil, err //in case something else is wrong
 }
 
-func (s *SessionManager) Load(uuid uuid.UUID) (*PlayerSession, error) { //only if we're sure the session has been created in cache before
+func (s *SessionManager) Load(username string) (*PlayerSession, error) { //only if we're sure the session has been created in cache before
 	var session PlayerSession
-	key := cachePrefix + uuid.String()
+	key := cachePrefix + username
 	data, _ := s.cache.Get(key)
 	buffer := bytes.NewBuffer(data.Value)
 
@@ -78,8 +78,8 @@ func (s *SessionManager) Load(uuid uuid.UUID) (*PlayerSession, error) { //only i
 	return &session, nil
 }
 
-func (s *SessionManager) Save(uuid uuid.UUID, ps *PlayerSession) error {
-	key := cachePrefix + uuid.String()
+func (s *SessionManager) Save(username string, ps *PlayerSession) error {
+	key := cachePrefix + username
 
 	var buffer bytes.Buffer
 
@@ -94,17 +94,17 @@ func (s *SessionManager) Save(uuid uuid.UUID, ps *PlayerSession) error {
 	})
 }
 
-func (s *SessionManager) Delete(uuid uuid.UUID) error {
-	return s.cache.Delete(cachePrefix + uuid.String())
+func (s *SessionManager) Delete(username string) error {
+	return s.cache.Delete(cachePrefix + username)
 }
 
-func (s *SessionManager) AddBlocksBroken(uuid uuid.UUID) error {
-	session, err := s.Load(uuid)
+func (s *SessionManager) AddBlocksBroken(username string) error {
+	session, err := s.Load(username)
 	utils.Check(err)
 
 	if session != nil {
 		session.BlocksBroken++
-		return s.Save(uuid, session)
+		return s.Save(username, session)
 	} else {
 		return errors.New("Call AddBlocksBroken() for non-existant session while loaded correctly")
 	}
