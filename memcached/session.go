@@ -68,14 +68,21 @@ func (s *SessionManager) LoadOrCreate(uuid uuid.UUID, username string) (*PlayerS
 func (s *SessionManager) Load(username string) (*PlayerSession, error) { //only if we're sure the session has been created in cache before
 	var session PlayerSession
 	key := cachePrefix + username
-	data, _ := s.cache.Get(key)
-	buffer := bytes.NewBuffer(data.Value)
+	data, err := s.cache.Get(key)
 
-	if err := gob.NewDecoder(buffer).Decode(&session); err != nil {
+	switch err {
+	case nil:
+		buffer := bytes.NewBuffer(data.Value)
+
+		if err := gob.NewDecoder(buffer).Decode(&session); err != nil {
+			return nil, err
+		}
+
+		return &session, nil
+	default:
 		return nil, err
 	}
 
-	return &session, nil
 }
 
 func (s *SessionManager) Save(username string, ps *PlayerSession) error {
