@@ -4,7 +4,6 @@ import (
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/df-mc/dragonfly/server/item"
 	"github.com/df-mc/dragonfly/server/player"
-	"github.com/syseditor/libeloula/utils"
 )
 
 type PlayerHandler struct {
@@ -13,7 +12,9 @@ type PlayerHandler struct {
 
 func HandleJoin(player *player.Player) { //call this in main.go
 	_, err := CacheManager.LoadOrCreate(player.UUID(), player.Name())
-	utils.Check(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (PlayerHandler) HandleQuit(player *player.Player) {
@@ -28,7 +29,9 @@ func (PlayerHandler) HandleQuit(player *player.Player) {
 	*/
 
 	err := CacheManager.Delete(player.Name())
-	utils.Check(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (PlayerHandler) HandleBlockBreak(ctx *player.Context, _ cube.Pos, _ *[]item.Stack, _ *int) {

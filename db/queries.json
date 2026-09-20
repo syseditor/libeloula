@@ -1,0 +1,14 @@
+{
+    "createTable" : {
+        "players" : "CREATE TABLE IF NOT EXISTS Players (UUID VARCHARACTER, Username VARCHARACTER, JoinedAt VARCHARACTER, BlocksBroken SMALLINT);"
+    },
+    "insert" : {
+        "player" : ""
+    },
+    "update" : {
+        "player" : ""
+    },
+    "delete" : {
+        "player" : ""
+    }
+}
