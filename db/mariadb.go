@@ -6,6 +6,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/syseditor/libeloula/memcached"
 )
 
@@ -38,6 +39,8 @@ func (p *MariaDBProvider) InitializeDB(username string, password string) {
 			"player": "CREATE TABLE IF NOT EXISTS Players (UUID VARCHARACTER, Username VARCHARACTER, JoinedAt VARCHARACTER, BlocksBroken SMALLINT);",
 		},
 	})
+
+	fmt.Printf("%sSuccessfully connected to database!\n", text.Blue)
 }
 
 func (p MariaDBProvider) AddPlayer(session memcached.PlayerSession) {
