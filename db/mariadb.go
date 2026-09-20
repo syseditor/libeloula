@@ -25,7 +25,7 @@ func check(err error) {
 
 func (p *MariaDBProvider) InitializeDB(username string, password string) {
 	var err error
-	p.DB, err = sql.Open("mariadb", fmt.Sprintf("%s:%s@(localhost)/Libeloula", username, password))
+	p.DB, err = sql.Open("mysql", fmt.Sprintf("%s:%s@(localhost)/Libeloula", username, password))
 	check(err)
 
 	err = p.DB.Ping()
