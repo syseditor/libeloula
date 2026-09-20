@@ -7,6 +7,7 @@ type DataProvider interface {
 	AddPlayer(session memcached.PlayerSession)
 	UpdatePlayer(session memcached.PlayerSession)
 	RemovePlayer(uuid string)
+	CheckTables() error
 }
 
 func NewDataProvider(source string) DataProvider {
