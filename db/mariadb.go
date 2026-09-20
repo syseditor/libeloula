@@ -9,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/syseditor/libeloula/memcached"
+	"github.com/syseditor/libeloula/utils"
 )
 
 type MariaDBProvider struct {
@@ -23,7 +24,8 @@ func check(err error) {
 }
 
 func criticalError(err error) {
-	fmt.Printf("%s[Critical] %s-> %s%s", text.ANSI(text.DarkRed), text.ANSI(text.DarkGrey), text.ANSI(text.Red), err)
+	fmt.Printf("%s[Critical] %s-> %s%s\n%s", text.ANSI(text.DarkRed), text.ANSI(text.DarkGrey), text.ANSI(text.Red), err, text.ANSI(text.Reset))
+	utils.Server.Close()
 }
 
 func (p *MariaDBProvider) InitializeDB(username string, password string) {
@@ -41,7 +43,7 @@ func (p *MariaDBProvider) InitializeDB(username string, password string) {
 	//Load all available db queries
 	p.queries = *new(map[string]interface{}{
 		"createTable": map[string]string{
-			"Players": "CREATE TABLE IF NOT EXISTS Players (UUID VARCHARACTER, Username VARCHARACTER, JoinedAt VARCHARACTER, BlocksBroken SMALLINT);",
+			"Players": "CREATE TABLE IF NOT EXISTS Libeloula.Players (uuid VARCHAR2 NOT NULL, username VARCHAR2 NOT NULL, joined_at VARCHAR2 NOT NULL, blocks_broken INT DEFAULT 0, PRIMARY KEY (uuid));",
 		},
 	})
 
