@@ -2,9 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/syseditor/libeloula/memcached"
@@ -12,10 +11,8 @@ import (
 
 type MariaDBProvider struct {
 	DB      *sql.DB
-	queries *mariaDBQueries
+	queries *map[string]interface{}
 }
-
-type mariaDBQueries map[string]interface{}
 
 func check(err error) {
 	if err != nil {
@@ -28,15 +25,19 @@ func (p *MariaDBProvider) InitializeDB(username string, password string) {
 	p.DB, err = sql.Open("mysql", fmt.Sprintf("%s:%s@(localhost)/Libeloula", username, password))
 	check(err)
 
+	p.DB.SetConnMaxLifetime(time.Minute)
+	p.DB.SetMaxOpenConns(30)
+	p.DB.SetMaxIdleConns(30)
+
 	err = p.DB.Ping()
 	check(err)
 
-	//Load all available db queries from queries.json
-	file, err := os.Open("queries.json")
-	check(err)
-
-	dec := json.NewDecoder(file)
-	dec.Decode(p.queries)
+	//Load all available db queries
+	p.queries = new(map[string]interface{}{
+		"createTable": map[string]string{
+			"player": "CREATE TABLE IF NOT EXISTS Players (UUID VARCHARACTER, Username VARCHARACTER, JoinedAt VARCHARACTER, BlocksBroken SMALLINT);",
+		},
+	})
 }
 
 func (p MariaDBProvider) AddPlayer(session memcached.PlayerSession) {
